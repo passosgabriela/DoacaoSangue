@@ -1,0 +1,110 @@
+/* frontend/assets/css/style.css */
+:root{
+  --primary:#b30000;
+  --primary-dark:#8c0000;
+  --muted:#f5f5f5;
+  --card-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+*{box-sizing:border-box}
+body {
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background: var(--muted);
+  color: #222;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+/* NAVBAR */
+nav {
+  background: var(--primary);
+  padding: 12px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 99;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+nav .logo { font-size: 20px; font-weight: 700; letter-spacing: .3px; }
+nav .nav-links { display:flex; gap:12px; align-items:center; }
+nav a { color: white; margin-left: 8px; text-decoration: none; font-weight: 600; padding:6px 10px; border-radius:6px; }
+nav a:hover { background: rgba(255,255,255,0.06); text-decoration:none; }
+
+/* LAYOUT */
+.container {
+  margin: 28px auto;
+  width: 92%;
+  max-width: 1000px;
+  background: white;
+  padding: 22px;
+  border-radius: 12px;
+  box-shadow: var(--card-shadow);
+}
+
+/* FORM */
+label { font-weight: 600; color:#333; display:block; margin-top: 8px; }
+input, select, textarea {
+  width: 100%;
+  padding: 10px 12px;
+  margin-top: 8px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  font-size: 14px;
+}
+textarea { min-height: 100px; resize: vertical; }
+
+/* BUTTONS */
+button {
+  background: var(--primary);
+  padding: 10px 16px;
+  border: none;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: background .15s ease;
+}
+button.secondary { background: #666; }
+button:hover { background: var(--primary-dark); }
+
+/* HEADINGS */
+h1 { color: var(--primary); margin: 0 0 8px 0; font-size: 22px; }
+
+/* TABLES */
+.table {
+  width:100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+}
+.table thead th {
+  text-align:left;
+  padding: 10px;
+  background: #fafafa;
+  border-bottom: 1px solid #eee;
+  font-weight:700;
+}
+.table tbody td {
+  padding: 10px;
+  border-bottom: 1px solid #f1f1f1;
+  font-size: 14px;
+}
+
+/* EMPTY STATE */
+.empty {
+  text-align:center;
+  padding: 18px;
+  color: #666;
+  border-radius: 8px;
+  background: #fffaf5;
+}
+
+/* RESPONSIVE */
+@media (max-width:640px){
+  nav .nav-links { display:none; }
+  .container { margin: 12px; padding: 16px; }
+}

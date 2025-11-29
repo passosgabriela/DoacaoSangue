@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Meus Agendamentos</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script type="module">
+    import { apiGet, getToken, logout } from './assets/js/api.js';
+    window.logout = logout;
+
+    if (!getToken()) window.location.href = 'login_usuario.html';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      document.body.insertAdjacentHTML('afterbegin', `
+        <nav><div class="logo">Clínica de Doação</div>
+          <div class="nav-links">
+            <a href="usuario_area.html">Minha Área</a>
+            <a href="agendar.html">Agendar</a>
+            <a href="historico_agendamentos.html">Meus Agendamentos</a>
+            <a href="historico_doacoes.html">Minhas Doações</a>
+            <a href="index.html" onclick="logout()">Sair</a>
+          </div>
+        </nav>
+      `);
+
+      const el = document.getElementById('list');
+      el.innerHTML = '<div class="empty">Carregando...</div>';
+
+      const res = await apiGet('/appointments/meus', true);
+
+      if (!Array.isArray(res)) {
+        el.innerHTML = `<div class="empty">${res.message || 'Erro'}</div>`;
+        return;
+      }
+      if (res.length === 0) {
+        el.innerHTML = '<div class="empty">Nenhum agendamento encontrado</div>';
+        return;
+      }
+
+      let html = `<table class="table"><thead><tr>
+        <th>ID</th><th>Data</th><th>Horário</th><th>Status</th>
+        </tr></thead><tbody>`;
+
+      for (const a of res) {
+        html += `<tr>
+          <td>${a.id}</td>
+          <td>${a.data_agendamento}</td>
+          <td>${a.horario}</td>
+          <td>${a.status}</td>
+        </tr>`;
+      }
+
+      html += `</tbody></table>`;
+      el.innerHTML = html;
+    });
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>Meus Agendamentos</h1>
+    <div id="list"></div>
+  </div>
+</body>
+</html>

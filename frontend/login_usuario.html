@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Login Usuário</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <div class="container" style="max-width:500px;">
+    <h1>Login Usuário</h1>
+
+    <input id="email" type="email" placeholder="Email" />
+    <input id="senha" type="password" placeholder="Senha" />
+
+    <button onclick="loginUsuario()">Entrar</button>
+    <p id="msg"></p>
+
+    <br>
+    <a href="cadastro_usuario.html">Criar conta</a>
+  </div>
+
+  <script type="module">
+    import { apiPost, salvarToken } from './assets/js/api.js';
+
+    async function loginUsuario() {
+      const res = await apiPost("/users/login", {
+        email: document.getElementById("email").value,
+        senha: document.getElementById("senha").value
+      });
+
+      if (res.token) {
+        salvarToken(res.token);
+        window.location.href = "usuario_area.html";
+      } else {
+        document.getElementById("msg").innerText = res.message;
+      }
+    }
+
+    window.loginUsuario = loginUsuario;
+  </script>
+
+</body>
+</html>

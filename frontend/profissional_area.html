@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Área do Profissional</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script type="module">
+    import { apiGet, getToken, getRole, logout } from './assets/js/api.js';
+    window.logout = logout;
+
+    if (!getToken()) window.location.href = 'login_profissional.html';
+    if (getRole() !== 'profissional') window.location.href = 'usuario_area.html';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      document.body.insertAdjacentHTML('afterbegin', `
+        <nav><div class="logo">Clínica de Doação</div>
+          <div class="nav-links">
+            <a href="profissional_area.html">Minha Área</a>
+            <a href="lista_triagens.html">Lista de Triagens</a>
+            <a href="index.html" onclick="logout()">Sair</a>
+          </div>
+        </nav>
+      `);
+
+      const el = document.getElementById('meuCard');
+      el.innerHTML = '<div class="empty">Carregando...</div>';
+
+      const me = await apiGet('/profissionais/me', true);
+      if (me.error || me.message) {
+        el.innerHTML = `<div class="empty">${me.message || 'Erro'}</div>`;
+        return;
+      }
+
+      el.innerHTML = `
+        <div>
+          <h2>${me.nome}</h2>
+          <p><strong>Registro:</strong> ${me.registro_profissional || '-'}</p>
+          <p><strong>Contato:</strong> ${me.contato || '-'}</p>
+          <p><strong>Email:</strong> ${me.email}</p>
+        </div>
+      `;
+    });
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>Área do Profissional</h1>
+    <div id="meuCard"></div>
+  </div>
+</body>
+</html>

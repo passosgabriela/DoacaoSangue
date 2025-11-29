@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Registrar Triagem</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script type="module">
+    import { apiPost, getToken, getRole, logout } from './assets/js/api.js';
+    window.logout = logout;
+
+    if (!getToken()) window.location.href = 'login_profissional.html';
+    if (getRole() !== 'profissional') window.location.href = 'usuario_area.html';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.body.insertAdjacentHTML('afterbegin', `
+        <nav><div class="logo">Clínica de Doação</div>
+          <div class="nav-links">
+            <a href="profissional_area.html">Minha Área</a>
+            <a href="lista_triagens.html">Lista de Triagens</a>
+            <a href="index.html" onclick="logout()">Sair</a>
+          </div>
+        </nav>
+      `);
+    });
+
+    async function registrarTriagem() {
+      const agendamento_id = parseInt(document.getElementById("agendamento").value);
+      const pressao = document.getElementById("pressao").value;
+      const batimentos = parseInt(document.getElementById("batimentos").value);
+      const temperatura = parseFloat(document.getElementById("temperatura").value);
+      const observacoes = document.getElementById("observacoes").value;
+      const status = document.getElementById("status").value;
+
+      const res = await apiPost(`/triagem/registrar`, {
+        agendamento_id, pressao, batimentos, temperatura, observacoes, status
+      }, true);
+
+      document.getElementById("msg").innerText = res.id ? "Triagem registrada!" : (res.message || 'Erro');
+    }
+
+    window.registrarTriagem = registrarTriagem;
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>Registrar Triagem</h1>
+
+    <label>ID do Agendamento</label>
+    <input id="agendamento" type="number">
+
+    <label>Pressão</label>
+    <input id="pressao" type="text" placeholder="12/8">
+
+    <label>Batimentos</label>
+    <input id="batimentos" type="number">
+
+    <label>Temperatura</label>
+    <input id="temperatura" type="number" step="0.1">
+
+    <label>Observações</label>
+    <textarea id="observacoes"></textarea>
+
+    <label>Status</label>
+    <select id="status">
+      <option value="APROVADO">APROVADO</option>
+      <option value="REPROVADO">REPROVADO</option>
+    </select>
+
+    <button onclick="registrarTriagem()">Registrar Triagem</button>
+    <p id="msg"></p>
+  </div>
+</body>
+</html>
