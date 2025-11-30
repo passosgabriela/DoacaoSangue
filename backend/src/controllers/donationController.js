@@ -1,31 +1,45 @@
-import { Donation } from "../models/Donation.js";
+import { db } from "../config/db.js";
 
 export const donationController = {
 
-  register: async (req, res) => {
+  minhasDoacoes: async (req, res) => {
     try {
-      const { usuario_id, data_doacao, volume_coletado, tipo_sanguineo } = req.body;
+      const usuarioId = req.userId;
 
-      const id = await Donation.create([
-        usuario_id,
-        data_doacao,
-        volume_coletado,
-        tipo_sanguineo
-      ]);
+      const [rows] = await db.query(
+        "SELECT * FROM vw_doacoes WHERE usuario_id = ? ORDER BY data_doacao DESC",
+        [usuarioId]
+      );
 
-      res.json({ message: "Doação registrada", id });
+      res.json(rows);
 
     } catch (err) {
       res.status(500).json(err);
     }
   },
 
-  listByUser: async (req, res) => {
+  registrarManual: async (req, res) => {
     try {
-      const userId = req.userId; // do token
-      const doacoes = await Donation.findByUser(userId);
+      const {
+        agendamento_id,
+        usuario_id,
+        data_doacao,
+        volume_coletado,
+        tipo_sanguineo,
+        campanha_id
+      } = req.body;
 
-      res.json(doacoes);
+      await db.query("CALL registrar_doacao(?, ?, ?, ?, ?, ?)", [
+        agendamento_id,
+        usuario_id,
+        data_doacao,
+        volume_coletado,
+        tipo_sanguineo,
+        campanha_id || null
+      ]);
+
+      res.json({ message: "Doação registrada manualmente" });
+
     } catch (err) {
       res.status(500).json(err);
     }

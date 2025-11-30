@@ -1,9 +1,11 @@
-import { Triagem } from "../models/Triagem.js";
+import { db } from "../config/db.js";
 
 export const triagemController = {
 
   registrar: async (req, res) => {
     try {
+      const profissionalId = req.profissionalId;
+
       const {
         agendamento_id,
         pressao,
@@ -13,11 +15,9 @@ export const triagemController = {
         status
       } = req.body;
 
-      const profissional_id = req.profissionalId; // profissional logado
-
-      const id = await Triagem.create([
+      await db.query("CALL registrar_triagem(?, ?, ?, ?, ?, ?, ?)", [
         agendamento_id,
-        profissional_id,
+        profissionalId,
         pressao,
         batimentos,
         temperatura,
@@ -25,28 +25,21 @@ export const triagemController = {
         status
       ]);
 
-      res.json({ message: "Triagem registrada", id });
+      res.json({ message: "Triagem registrada com sucesso" });
 
     } catch (err) {
       res.status(500).json(err);
     }
   },
 
-  porAgendamento: async (req, res) => {
+  listar: async (req, res) => {
     try {
-      const { id } = req.params; // id do agendamento
-      const triagem = await Triagem.findByAppointment(id);
+      const [rows] = await db.query(
+        "SELECT * FROM vw_triagens ORDER BY id DESC"
+      );
 
-      res.json(triagem || {});
-    } catch (err) {
-      res.status(500).json(err);
-    }
-  },
-
-  all: async (req, res) => {
-    try {
-      const rows = await Triagem.listAll();
       res.json(rows);
+
     } catch (err) {
       res.status(500).json(err);
     }

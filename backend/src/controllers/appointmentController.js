@@ -1,30 +1,42 @@
-import { Appointment } from "../models/Appointment.js";
+// backend/src/controllers/agendamentoController.js
+import { db } from "../config/db.js";
 
 export const appointmentController = {
-  create: async (req, res) => {
+  
+  // Criar agendamento usando PROCEDURE
+  criar: async (req, res) => {
     try {
-      const { data_agendamento, horario } = req.body;
-      const userId = req.userId; // vem do middleware auth
+      const usuarioId = req.userId;
+      const { data, horario, campanha_id } = req.body;
 
-      const id = await Appointment.create([
-        userId,
-        data_agendamento,
+      // campanha_id pode ser null → backend não interfere mais
+      const campanha = campanha_id || null;
+
+      await db.query("CALL registrar_agendamento(?, ?, ?, ?)", [
+        usuarioId,
+        data,
         horario,
+        campanha
       ]);
 
-      res.json({ message: "Agendamento criado", id });
+      res.json({ message: "Agendamento criado com sucesso" });
 
     } catch (err) {
       res.status(500).json(err);
     }
   },
 
-  listByUser: async (req, res) => {
+  // Listar agendamentos do usuário via VIEW
+  meusAgendamentos: async (req, res) => {
     try {
-      const userId = req.userId;
-      const agendamentos = await Appointment.findByUser(userId);
+      const usuarioId = req.userId;
 
-      res.json(agendamentos);
+      const [rows] = await db.query(
+        "SELECT * FROM vw_agendamentos WHERE usuario_id = ? ORDER BY data_agendamento DESC",
+        [usuarioId]
+      );
+
+      res.json(rows);
 
     } catch (err) {
       res.status(500).json(err);
