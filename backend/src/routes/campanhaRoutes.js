@@ -1,6 +1,7 @@
 import express from "express";
 import { campanhaController } from "../controllers/campanhaController.js";
 import { auth } from "../middleware/auth.js";
+import { onlyAdmin } from "../middleware/auth.js";
 
 const router = express.Router();
 

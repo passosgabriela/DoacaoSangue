@@ -31,10 +31,12 @@
     async function agendar() {
       const data = document.getElementById("data").value;
       const horario = document.getElementById("horario").value;
+      const campanhaId = document.getElementById("campanha").value;
 
       const res = await apiPost("/appointments/create", {
         data_agendamento: data,
-        horario: horario
+        horario: horario,
+        campanha: campanhaId
       }, true);
 
       document.getElementById("msg").innerText =
@@ -54,6 +56,9 @@
 
     <label>Horário</label>
     <input id="horario" type="time">
+
+    <label>ID da Campanha (opcional)</label>
+    <input id="campanha" type="text" placeholder="Deixe vazio se não for em campanha">
 
     <button onclick="agendar()">Agendar</button>
     <p id="msg"></p>

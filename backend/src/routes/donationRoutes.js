@@ -5,9 +5,9 @@ import { auth } from "../middleware/auth.js";
 const router = express.Router();
 
 // Registrar doação (futuro: proteger com role admin/profissional)
-router.post("/register", auth, donationController.register);
+router.post("/register", auth, donationController.registrarManual);
 
 // listar minhas doações
-router.get("/meus", auth, donationController.listByUser);
+router.get("/meus", auth, donationController.minhasDoacoes);
 
 export default router;

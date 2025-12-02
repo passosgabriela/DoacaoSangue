@@ -1,6 +1,7 @@
 import express from "express";
 import { triagemController } from "../controllers/triagemController.js";
 import { auth } from "../middleware/auth.js";
+import { onlyProfessional } from "../middleware/auth.js";
 
 const router = express.Router();
 
