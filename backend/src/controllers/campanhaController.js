@@ -4,10 +4,10 @@ export const campanhaController = {
 
   criar: async (req, res) => {
     try {
-      const { nome, descricao, data_inicio, data_fim } = req.body;
+      const { titulo, descricao, data_inicio, data_fim } = req.body;
 
       await db.query("CALL criar_campanha(?, ?, ?, ?)", [
-        nome,
+        titulo,
         descricao,
         data_inicio,
         data_fim
@@ -23,11 +23,11 @@ export const campanhaController = {
   atualizar: async (req, res) => {
     try {
       const id = req.params.id;
-      const { nome, descricao, data_inicio, data_fim } = req.body;
+      const { titulo, descricao, data_inicio, data_fim } = req.body;
 
       await db.query("CALL atualizar_campanha(?, ?, ?, ?, ?)", [
         id,
-        nome,
+        titulo,
         descricao,
         data_inicio,
         data_fim
@@ -55,7 +55,9 @@ export const campanhaController = {
 
   listar: async (req, res) => {
     try {
-      const [rows] = await db.query("SELECT * FROM campanhas ORDER BY data_inicio DESC");
+      const [rows] = await db.query(
+        "SELECT * FROM campanhas ORDER BY data_inicio DESC"
+      );
       res.json(rows);
 
     } catch (err) {

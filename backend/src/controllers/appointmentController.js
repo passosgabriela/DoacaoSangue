@@ -1,32 +1,26 @@
-// backend/src/controllers/agendamentoController.js
 import { db } from "../config/db.js";
 
 export const appointmentController = {
   
-  // Criar agendamento usando PROCEDURE
   criar: async (req, res) => {
     try {
       const usuarioId = req.userId;
       const { data, horario, campanha_id } = req.body;
 
-      // campanha_id pode ser null → backend não interfere mais
-      const campanha = campanha_id || null;
-
       await db.query("CALL registrar_agendamento(?, ?, ?, ?)", [
         usuarioId,
         data,
         horario,
-        campanha
+        campanha_id || null
       ]);
 
       res.json({ message: "Agendamento criado com sucesso" });
 
     } catch (err) {
-      res.status(500).json(err);
+      res.status(500).json({ error: err.sqlMessage || err });
     }
   },
 
-  // Listar agendamentos do usuário via VIEW
   meusAgendamentos: async (req, res) => {
     try {
       const usuarioId = req.userId;
@@ -37,6 +31,32 @@ export const appointmentController = {
       );
 
       res.json(rows);
+
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  },
+
+  confirmar: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      await db.query("CALL confirmar_agendamento(?)", [id]);
+
+      res.json({ message: "Agendamento confirmado" });
+
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  },
+
+  cancelar: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      await db.query("CALL cancelar_agendamento(?)", [id]);
+
+      res.json({ message: "Agendamento cancelado" });
 
     } catch (err) {
       res.status(500).json(err);
