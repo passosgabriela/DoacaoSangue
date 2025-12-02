@@ -6,7 +6,7 @@ import appointmentRoutes from "./src/routes/appointmentRoutes.js";
 import donationRoutes from "./src/routes/donationRoutes.js";
 import triagemRoutes from "./src/routes/triagemRoutes.js";
 import profissionalRoutes from "./src/routes/profissionalRoutes.js";
-
+import adminRoutes from "./routes/adminRoutes.js";
 
 dotenv.config();
 
@@ -20,6 +20,7 @@ app.use("/appointments", appointmentRoutes);
 app.use("/donations", donationRoutes);
 app.use("/triagem", triagemRoutes);
 app.use("/profissionais", profissionalRoutes);
+app.use("/admin", adminRoutes);
 
 
 app.listen(3000, () => {
