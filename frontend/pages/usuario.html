@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Área do Usuário</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+
+<body>
+
+    <div id="site-navbar"></div>
+
+    <header class="bg-danger text-white py-5">
+        <div class="container">
+            <h1 class="fw-bold">Olá, doador! ❤️</h1>
+            <p class="lead">Aqui você pode agendar sua doação, ver suas campanhas e seu histórico.</p>
+        </div>
+    </header>
+
+    <div class="container py-4">
+
+        <section id="campanhas" class="mb-5">
+            <h2 class="mb-3">Campanhas Disponíveis</h2>
+            <div id="lista-campanhas" class="row g-3">
+            </div>
+        </section>
+
+        <hr>
+
+        <section id="agendar" class="mb-5">
+            <h2 class="mb-3">Agendar Doação</h2>
+
+            <form id="formAgendamento" class="p-4 border rounded bg-white shadow-sm">
+
+                <div id="agendamentoAlert" class="alert d-none"></div>
+
+                <div class="mb-3">
+                    <label class="form-label">Data da doação</label>
+                    <input type="date" id="data" class="form-control" required />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Horário</label>
+                    <input type="time" id="horario" class="form-control" required />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Campanha (opcional)</label>
+                    <select id="campanha_id" class="form-select">
+                        <option value="">Nenhuma</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-danger w-100">Agendar</button>
+            </form>
+        </section>
+
+        <hr>
+
+        <section id="meus-agendamentos" class="mb-5">
+            <h2 class="mb-3">Meus Agendamentos</h2>
+
+            <div id="agendamentos-list" class="row g-3">
+            </div>
+        </section>
+
+        <hr>
+
+        <section id="minhas-doacoes" class="mb-5">
+            <h2 class="mb-3">Minhas Doações</h2>
+
+            <div id="doacoes-list" class="row g-3">
+            </div>
+        </section>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/navbar.js"></script>
+
+    <script>
+        initNavbar();
+
+        if (!API.isLogged() || API.getRole() !== "usuario") {
+            window.location.href = "../pages/login.html";
+        }
+
+        // ===== CARREGAR CAMPANHAS =====
+        async function carregarCampanhas() {
+            const campanhas = await API.getCampanhas();
+            const lista = document.getElementById("lista-campanhas");
+            const select = document.getElementById("campanha_id");
+
+            lista.innerHTML = "";
+            select.innerHTML = '<option value="">Nenhuma</option>';
+
+            campanhas.forEach(c => {
+                lista.innerHTML += `
+        <div class="col-md-4">
+          <div class="card shadow-sm h-100">
+            <div class="card-body">
+              <h5 class="card-title">${c.titulo}</h5>
+              <p class="card-text">${c.descricao || ""}</p>
+              <small class="text-muted">De ${c.data_inicio} a ${c.data_fim}</small>
+            </div>
+          </div>
+        </div>`;
+
+                const op = document.createElement("option");
+                op.value = c.id;
+                op.textContent = c.titulo;
+                select.appendChild(op);
+            });
+        }
+
+        document.getElementById("formAgendamento").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const alertBox = document.getElementById("agendamentoAlert");
+            alertBox.classList.add("d-none");
+
+            try {
+                const data = document.getElementById("data").value;
+                const horario = document.getElementById("horario").value;
+                const campanha = document.getElementById("campanha_id").value || null;
+
+                await API.createAgendamento({ data, horario, campanha_id: campanha });
+
+                alertBox.classList.remove("d-none");
+                alertBox.classList.add("alert-success");
+                alertBox.innerText = "Agendamento criado com sucesso!";
+
+                carregarAgendamentos();
+
+            } catch (err) {
+                alertBox.classList.remove("d-none");
+                alertBox.classList.add("alert-danger");
+                alertBox.innerText = err.message || "Erro ao agendar";
+            }
+        });
+
+        async function carregarAgendamentos() {
+            const lista = document.getElementById("agendamentos-list");
+            const agds = await API.getMeusAgendamentos();
+            lista.innerHTML = "";
+
+            if (agds.length === 0) {
+                lista.innerHTML = "<p>Nenhum agendamento ainda.</p>";
+                return;
+            }
+
+            agds.forEach(a => {
+                lista.innerHTML += `
+        <div class="col-md-6">
+          <div class="p-3 border rounded bg-white shadow-sm">
+            <h5>${a.data_agendamento} às ${a.horario}</h5>
+            <p>Status: <strong>${a.status}</strong></p>
+            <p>Campanha: ${a.campanha || "Nenhuma"}</p>
+          </div>
+        </div>`;
+            });
+        }
+
+        async function carregarDoacoes() {
+            const lista = document.getElementById("doacoes-list");
+            const ds = await API.getMinhasDoacoes();
+            lista.innerHTML = "";
+
+            if (ds.length === 0) {
+                lista.innerHTML = "<p>Nenhuma doação registrada ainda.</p>";
+                return;
+            }
+
+            ds.forEach(d => {
+                lista.innerHTML += `
+        <div class="col-md-6">
+          <div class="p-3 border rounded bg-white shadow-sm">
+            <h5>${d.data_doacao}</h5>
+            <p>Volume coletado: ${d.volume_coletado}ml</p>
+            <p>Tipo: ${d.tipo_sanguineo}</p>
+            <p>Campanha: ${d.campanha || "Nenhuma"}</p>
+          </div>
+        </div>`;
+            });
+        }
+
+        carregarCampanhas();
+        carregarAgendamentos();
+        carregarDoacoes();
+    </script>
+
+</body>
+
+</html>

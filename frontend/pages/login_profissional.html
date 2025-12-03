@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login Profissional</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../assets/css/style.css" rel="stylesheet">
+</head>
+
+<body>
+  <div id="site-navbar"></div>
+
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+
+        <div class="card shadow-lg">
+          <div class="card-body p-4">
+            <h3 class="text-center mb-3">Profissional Login 🩺</h3>
+
+            <div id="alert" class="alert d-none"></div>
+
+            <form id="formLogin">
+              <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" id="email" class="form-control" required>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Senha</label>
+                <input type="password" id="senha" class="form-control" required>
+              </div>
+
+              <button class="btn btn-primary w-100 mt-2">Entrar</button>
+
+              <a href="index.html" class="d-block text-center mt-3 text-decoration-none">Voltar ao início</a>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/navbar.js"></script>
+  <script src="../assets/js/auth.js"></script>
+
+  <script>
+    initNavbar();
+    document.getElementById("formLogin").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const alertBox = document.getElementById("alert");
+
+      try {
+        const res = await API.loginProfissional(email.value, senha.value);
+
+        alertBox.className = "alert alert-success";
+        alertBox.textContent = "Login realizado!";
+
+        setTimeout(() => window.location.href = "profissional.html", 600);
+
+      } catch {
+        alertBox.className = "alert alert-danger";
+        alertBox.textContent = "Email ou senha inválidos";
+      }
+    });
+  </script>
+
+</body>
+
+</html>

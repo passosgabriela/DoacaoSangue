@@ -6,7 +6,7 @@ import appointmentRoutes from "./src/routes/appointmentRoutes.js";
 import donationRoutes from "./src/routes/donationRoutes.js";
 import triagemRoutes from "./src/routes/triagemRoutes.js";
 import profissionalRoutes from "./src/routes/profissionalRoutes.js";
-import adminRoutes from "./routes/adminRoutes.js";
+import adminRoutes from "./src/routes/adminRoutes.js";
 
 dotenv.config();
 

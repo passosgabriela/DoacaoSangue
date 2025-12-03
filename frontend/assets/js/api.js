@@ -1,77 +1,53 @@
-// frontend/assets/js/api.js
-const API_URL = "http://localhost:3000";
+// assets/js/api.js
+const API = (function(){
+  const BASE_URL = "http://localhost:3000";
 
-export function salvarToken(token) {
-  localStorage.setItem("token", token);
-}
+  async function request(path, opts = {}) {
+    const headers = opts.headers || {};
+    const token = localStorage.getItem('token');
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    headers['Content-Type'] = 'application/json';
 
-export function getToken() {
-  return localStorage.getItem("token");
-}
+    const res = await fetch(BASE_URL + path, {
+      method: opts.method || 'GET',
+      headers,
+      body: opts.body ? JSON.stringify(opts.body) : null
+    });
 
-export function logout() {
-  localStorage.removeItem("token");
-  // volta pra home pública
-  window.location.href = "index.html";
-}
+    const text = await res.text();
+    let data;
+    try { data = text ? JSON.parse(text) : null; } catch(e) { data = text; }
 
-// parse simples do JWT (sem libs) — retorna payload (obj) ou null
-export function parseJwt(token) {
-  try {
-    const base = token.split('.')[1];
-    const json = decodeURIComponent(atob(base).split('').map(function(c) {
-      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
-    return JSON.parse(json);
-  } catch (e) {
-    return null;
-  }
-}
-
-// retorna role presente no token (ex: "profissional" ou null)
-export function getRole() {
-  const t = getToken();
-  if (!t) return null;
-  const p = parseJwt(t);
-  if (!p) return null;
-  return p.role || p.tipo || (p.profissionalId ? "profissional" : null) || null;
-}
-
-export function isLogged() {
-  return !!getToken();
-}
-
-async function request(endpoint, method = "GET", body = null, precisaAuth = false) {
-  const headers = {};
-  if (body) headers["Content-Type"] = "application/json";
-  if (precisaAuth) {
-    const token = getToken();
-    if (!token) {
-      return { message: "Token não encontrado", error: true };
+    if (!res.ok) {
+      const err = (data && data.message) ? data : { message: res.statusText || 'Erro' };
+      throw err;
     }
-    headers["Authorization"] = "Bearer " + token;
+    return data;
   }
 
-  const res = await fetch(API_URL + endpoint, {
-    method,
-    headers,
-    body: body ? JSON.stringify(body) : undefined,
-  });
+  return {
+    // Users
+    loginUser: (body) => request('/users/login', { method: 'POST', body }),
+    registerUser: (body) => request('/users/register', { method: 'POST', body }),
+    getMyProfile: () => request('/users/me'),
 
-  let json;
-  try {
-    json = await res.json();
-  } catch (e) {
-    return { message: "Resposta inválida do servidor", error: true };
-  }
+    // Professionals (use '/profissionais' or '/profissional' depending on backend)
+    loginProfessional: (body) => request('/profissionais/login', { method: 'POST', body }),
+    // fallback if your backend expects different route: /profissional/login
+    loginProfessionalFallback: (body) => request('/profissional/login', { method: 'POST', body }),
 
-  return json;
-}
+    // Admin
+    loginAdmin: (body) => request('/admin/login', { method: 'POST', body }),
 
-export async function apiPost(endpoint, body, precisaAuth = false) {
-  return request(endpoint, "POST", body, precisaAuth);
-}
+    // Campanhas
+    getCampanhas: () => request('/campanhas'),
 
-export async function apiGet(endpoint, precisaAuth = false) {
-  return request(endpoint, "GET", null, precisaAuth);
-}
+    // Agendamentos & Doações (example)
+    createAgendamento: (body) => request('/agendamentos/create', { method: 'POST', body }),
+    getMeusAgendamentos: () => request('/agendamentos/meus'),
+    getMinhasDoacoes: () => request('/doacoes/meus'),
+  };
+})();
+
+// export for other scripts
+window.API = API;

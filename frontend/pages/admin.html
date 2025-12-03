@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Painel do Administrador</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="../assets/css/style.css" rel="stylesheet" />
+</head>
+
+<body>
+
+    <div id="site-navbar"></div>
+
+    <header class="bg-dark text-white py-5">
+        <div class="container">
+            <h1 class="fw-bold">Painel Administrativo ⚙️</h1>
+            <p>Gerencie profissionais, campanhas e visualize dados gerais.</p>
+        </div>
+    </header>
+
+    <div class="container py-4">
+
+        <section id="campanhas" class="mb-5">
+            <h2 class="mb-3">Campanhas de Doação 🎉</h2>
+
+            <button class="btn btn-success mb-3" data-bs-toggle="collapse" data-bs-target="#campanhaFormWrapper">
+                + Criar Nova Campanha
+            </button>
+
+            <div class="collapse" id="campanhaFormWrapper">
+                <form id="campanhaForm" class="p-4 bg-white rounded shadow-sm">
+                    <div id="campanhaAlert" class="alert d-none"></div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Título</label>
+                        <input type="text" id="camp_titulo" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Descrição</label>
+                        <textarea id="camp_descricao" class="form-control" required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Data de Início</label>
+                        <input type="date" id="camp_inicio" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Data de Fim</label>
+                        <input type="date" id="camp_fim" class="form-control" required>
+                    </div>
+
+                    <button class="btn btn-primary w-100">Salvar Campanha</button>
+                </form>
+            </div>
+
+            <hr class="my-4">
+
+            <div id="listaCampanhas" class="row g-3"></div>
+        </section>
+
+        <section id="profissionais" class="mb-5">
+
+            <h2>Profissionais de Saúde 🩺</h2>
+
+            <button class="btn btn-success mb-3" data-bs-toggle="collapse" data-bs-target="#formProfWrapper">
+                + Cadastrar Profissional
+            </button>
+
+            <div class="collapse" id="formProfWrapper">
+                <form id="profForm" class="p-4 bg-white rounded shadow-sm">
+
+                    <div id="profAlert" class="alert d-none"></div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Nome</label>
+                        <input type="text" id="prof_nome" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Registro Profissional</label>
+                        <input type="text" id="prof_registro" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Contato</label>
+                        <input type="text" id="prof_contato" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" id="prof_email" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Senha</label>
+                        <input type="password" id="prof_senha" class="form-control" required>
+                    </div>
+
+                    <button class="btn btn-primary w-100">Cadastrar</button>
+                </form>
+            </div>
+
+            <hr class="my-4">
+
+            <div id="listaProfissionais" class="row g-3"></div>
+        </section>
+
+        <section id="admins" class="mb-5">
+
+            <h2>Administradores 🔐</h2>
+
+            <button class="btn btn-success mb-3" data-bs-toggle="collapse" data-bs-target="#formAdminWrapper">
+                + Criar Admin
+            </button>
+
+            <div class="collapse" id="formAdminWrapper">
+                <form id="adminForm" class="p-4 bg-white rounded shadow-sm">
+                    <div id="adminAlert" class="alert d-none"></div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Nome</label>
+                        <input type="text" id="admin_nome" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" id="admin_email" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Senha</label>
+                        <input type="password" id="admin_senha" class="form-control" required>
+                    </div>
+
+                    <button class="btn btn-primary w-100">Criar Admin</button>
+                </form>
+            </div>
+
+            <hr class="my-4">
+
+            <div id="listaAdmins" class="row g-3"></div>
+        </section>
+
+        <section id="dadosGerais" class="mb-5 pb-5">
+
+            <h2>Dados Gerais do Sistema 📊</h2>
+
+            <div class="row g-4 my-4">
+
+                <div class="col-md-4">
+                    <div class="p-3 bg-white rounded shadow-sm text-center">
+                        <h3 id="totalDoacoes">0</h3>
+                        <p>Total de Doações</p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="p-3 bg-white rounded shadow-sm text-center">
+                        <h3 id="totalTriagens">0</h3>
+                        <p>Total de Triagens</p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="p-3 bg-white rounded shadow-sm text-center">
+                        <h3 id="totalAgendamentos">0</h3>
+                        <p>Total de Agendamentos</p>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/navbar.js"></script>
+
+    <script>
+
+        initNavbar();
+
+        if (!API.isLogged() || API.getRole() !== "adm") {
+            window.location.href = "../pages/login_admin.html";
+        }
+
+        async function carregarCampanhas() {
+            const el = document.getElementById("listaCampanhas");
+            const lista = await API.getCampanhas();
+
+            el.innerHTML = "";
+
+            lista.forEach(c => {
+                el.innerHTML += `
+        <div class="col-md-6">
+          <div class="p-3 bg-white shadow-sm rounded">
+            <h5>${c.titulo}</h5>
+            <p>${c.descricao}</p>
+            <p><small>${c.data_inicio} a ${c.data_fim}</small></p>
+
+            <button class="btn btn-danger btn-sm" onclick="apagarCampanha(${c.id})">Excluir</button>
+          </div>
+        </div>
+      `;
+            });
+        }
+
+        async function apagarCampanha(id) {
+            if (!confirm("Excluir campanha?")) return;
+            await API.removerCampanha(id);
+            carregarCampanhas();
+        }
+
+        document.getElementById("campanhaForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const alertBox = document.getElementById("campanhaAlert");
+
+            try {
+                await API.criarCampanha({
+                    titulo: camp_titulo.value,
+                    descricao: camp_descricao.value,
+                    data_inicio: camp_inicio.value,
+                    data_fim: camp_fim.value,
+                });
+
+                alertBox.className = "alert alert-success";
+                alertBox.textContent = "Campanha criada!";
+                carregarCampanhas();
+
+            } catch (err) {
+                alertBox.className = "alert alert-danger";
+                alertBox.textContent = "Erro ao criar campanha";
+            }
+        });
+
+
+        async function carregarProfissionais() {
+            const el = document.getElementById("listaProfissionais");
+            const lista = await API.getProfissionais();
+
+            el.innerHTML = "";
+            lista.forEach(p => {
+                el.innerHTML += `
+        <div class="col-md-6">
+          <div class="p-3 bg-white rounded shadow-sm">
+            <h5>${p.nome}</h5>
+            <p>${p.email}</p>
+            <p>${p.registro_profissional}</p>
+
+            <button class="btn btn-danger btn-sm" onclick="apagarProf(${p.id})">Excluir</button>
+          </div>
+        </div>
+      `;
+            });
+        }
+
+        async function apagarProf(id) {
+            if (!confirm("Excluir profissional?")) return;
+            await API.removerProfissional(id);
+            carregarProfissionais();
+        }
+
+        document.getElementById("profForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const alertBox = document.getElementById("profAlert");
+
+            try {
+                await API.registrarProfissional({
+                    nome: prof_nome.value,
+                    registro_profissional: prof_registro.value,
+                    contato: prof_contato.value,
+                    email: prof_email.value,
+                    senha: prof_senha.value,
+                });
+
+                alertBox.className = "alert alert-success";
+                alertBox.textContent = "Profissional cadastrado!";
+                carregarProfissionais();
+
+            } catch (err) {
+                alertBox.className = "alert alert-danger";
+                alertBox.textContent = "Erro ao cadastrar profissional";
+            }
+        });
+
+
+        async function carregarAdmins() {
+            const el = document.getElementById("listaAdmins");
+            const lista = await API.getAdmins();
+
+            el.innerHTML = "";
+            lista.forEach(a => {
+                el.innerHTML += `
+        <div class="col-md-6">
+          <div class="p-3 bg-white shadow-sm rounded">
+            <h5>${a.nome}</h5>
+            <p>${a.email}</p>
+
+            <button class="btn btn-danger btn-sm" onclick="apagarAdmin(${a.id})">Excluir</button>
+          </div>
+        </div>
+      `;
+            });
+        }
+
+        async function apagarAdmin(id) {
+            if (!confirm("Excluir admin?")) return;
+            await API.removerAdmin(id);
+            carregarAdmins();
+        }
+
+        document.getElementById("adminForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const alertBox = document.getElementById("adminAlert");
+
+            try {
+                await API.criarAdmin({
+                    nome: admin_nome.value,
+                    email: admin_email.value,
+                    senha: admin_senha.value,
+                });
+
+                alertBox.className = "alert alert-success";
+                alertBox.textContent = "Administrador criado!";
+                carregarAdmins();
+
+            } catch (err) {
+                alertBox.className = "alert alert-danger";
+                alertBox.textContent = "Erro ao criar admin";
+            }
+        });
+
+        async function carregarDadosGerais() {
+            const dados = await API.getSistemaResumo();
+
+            document.getElementById("totalDoacoes").textContent = dados.doacoes;
+            document.getElementById("totalTriagens").textContent = dados.triagens;
+            document.getElementById("totalAgendamentos").textContent = dados.agendamentos;
+        }
+
+
+        carregarCampanhas();
+        carregarProfissionais();
+        carregarAdmins();
+        carregarDadosGerais();
+
+    </script>
+</body>
+
+</html>

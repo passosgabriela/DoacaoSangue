@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Área do Profissional</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="../assets/css/style.css" rel="stylesheet"/>
+</head>
+<body>
+
+<div id="site-navbar"></div>
+
+<header class="bg-primary text-white py-5">
+  <div class="container">
+    <h1 class="fw-bold">Painel do Profissional 🩺</h1>
+    <p>Gerencie suas triagens e acompanhe doações.</p>
+  </div>
+</header>
+
+<div class="container py-4">
+  <section id="agendamentosDia" class="mb-5">
+    <h2>Agendamentos de Hoje</h2>
+    <p class="text-muted">Lista automática dos pacientes agendados.</p>
+
+    <div id="listaAgendamentosDia" class="row g-3">
+    </div>
+  </section>
+
+  <hr>
+
+  <section id="registrarTriagem" class="mb-5">
+    <h2>Registrar Triagem</h2>
+
+    <form id="formTriagem" class="p-4 bg-white shadow rounded">
+      <div id="triagemAlert" class="alert d-none"></div>
+
+      <div class="mb-3">
+        <label class="form-label">ID do Agendamento</label>
+        <input type="number" id="agendamento_id" class="form-control" required/>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Pressão</label>
+        <input type="text" id="pressao" class="form-control"/>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Batimentos</label>
+        <input type="number" id="batimentos" class="form-control"/>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Temperatura</label>
+        <input type="number" step="0.1" id="temperatura" class="form-control"/>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Observações</label>
+        <textarea id="observacoes" class="form-control"></textarea>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Status</label>
+        <select id="status" class="form-select">
+          <option value="APROVADO">Aprovado</option>
+          <option value="REPROVADO">Reprovado</option>
+        </select>
+      </div>
+
+      <button class="btn btn-primary w-100">Registrar Triagem</button>
+    </form>
+  </section>
+
+  <hr>
+
+  <section id="historicoTriagens" class="mb-5">
+    <h2>Histórico de Triagens</h2>
+
+    <div id="listaTriagens" class="row g-3">
+    </div>
+  </section>
+
+  <hr>
+
+  <section id="historicoDoacoes" class="mb-5 pb-5">
+    <h2>Histórico de Doações</h2>
+
+    <div id="listaDoacoesProf" class="row g-3">
+    </div>
+  </section>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="../assets/js/api.js"></script>
+<script src="../assets/js/auth.js"></script>
+<script src="../assets/js/navbar.js"></script>
+
+<script>
+  initNavbar();
+
+  if (!API.isLogged() || API.getRole() !== "profissional") {
+    window.location.href = "../pages/login_profissional.html";
+  }
+
+  async function carregarAgendamentosDia() {
+    const el = document.getElementById("listaAgendamentosDia");
+    const hoje = new Date().toISOString().split("T")[0];
+
+    try {
+      const dados = await API.getAgendamentosDia(hoje);
+      el.innerHTML = "";
+
+      if (dados.length === 0) {
+        el.innerHTML = "<p>Nenhum agendamento hoje.</p>";
+        return;
+      }
+
+      dados.forEach(a => {
+        el.innerHTML += `
+          <div class="col-md-6">
+            <div class="p-3 border rounded bg-white shadow-sm">
+              <h5>${a.usuario}</h5>
+              <p>${a.data_agendamento} às ${a.horario}</p>
+              <p>Campanha: ${a.campanha || "Nenhuma"}</p>
+              <p>Status: <strong>${a.status}</strong></p>
+            </div>
+          </div>`;
+      });
+    } catch(err){
+      console.log(err);
+    }
+  }
+
+  document.getElementById("formTriagem").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const alertBox = document.getElementById("triagemAlert");
+
+    try {
+      const body = {
+        agendamento_id: document.getElementById("agendamento_id").value,
+        pressao: document.getElementById("pressao").value,
+        batimentos: document.getElementById("batimentos").value,
+        temperatura: document.getElementById("temperatura").value,
+        observacoes: document.getElementById("observacoes").value,
+        status: document.getElementById("status").value,
+      };
+
+      await API.registrarTriagem(body);
+
+      alertBox.className = "alert alert-success";
+      alertBox.innerText = "Triagem registrada!";
+
+      carregarTriagens();
+      carregarDoacoes();
+
+    } catch (err) {
+      alertBox.className = "alert alert-danger";
+      alertBox.innerText = err.message || "Erro ao registrar triagem";
+    }
+  });
+
+  async function carregarTriagens() {
+    const el = document.getElementById("listaTriagens");
+    const dados = await API.getTriagens();
+
+    el.innerHTML = "";
+
+    dados.forEach(t => {
+      el.innerHTML += `
+        <div class="col-md-6">
+          <div class="p-3 border rounded bg-white shadow-sm">
+            <h5>Paciente: ${t.usuario}</h5>
+            <p>Status: <strong>${t.status}</strong></p>
+            <p>Pressão: ${t.pressao}</p>
+            <p>Batimentos: ${t.batimentos}</p>
+            <p>Temperatura: ${t.temperatura}</p>
+            <p><small>${t.data_agendamento}</small></p>
+          </div>
+        </div>`;
+    });
+  }
+
+  async function carregarDoacoes() {
+    const el = document.getElementById("listaDoacoesProf");
+    const dados = await API.getDoacoes();
+
+    el.innerHTML = "";
+
+    dados.forEach(d => {
+      el.innerHTML += `
+        <div class="col-md-6">
+          <div class="p-3 border rounded bg-white shadow-sm">
+            <h5>${d.usuario}</h5>
+            <p>Data: ${d.data_doacao}</p>
+            <p>Volume: ${d.volume_coletado}ml</p>
+            <p>Tipo: ${d.tipo_sanguineo}</p>
+          </div>
+        </div>`;
+    });
+  }
+
+  carregarAgendamentosDia();
+  carregarTriagens();
+  carregarDoacoes();
+</script>
+
+</body>
+</html>
