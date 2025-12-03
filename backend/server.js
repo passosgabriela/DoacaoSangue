@@ -7,6 +7,8 @@ import donationRoutes from "./src/routes/donationRoutes.js";
 import triagemRoutes from "./src/routes/triagemRoutes.js";
 import profissionalRoutes from "./src/routes/profissionalRoutes.js";
 import adminRoutes from "./src/routes/adminRoutes.js";
+import campanhaRoutes from "./src/routes/campanhaRoutes.js";
+import sistemaRoutes from "./src/routes/sistemaRoutes.js";
 
 dotenv.config();
 
@@ -21,7 +23,8 @@ app.use("/donations", donationRoutes);
 app.use("/triagem", triagemRoutes);
 app.use("/profissionais", profissionalRoutes);
 app.use("/admin", adminRoutes);
-
+app.use("/campanha", campanhaRoutes);
+app.use("/sistema", sistemaRoutes);
 
 app.listen(3000, () => {
   console.log("Servidor rodando na porta 3000");

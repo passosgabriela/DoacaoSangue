@@ -43,5 +43,19 @@ export const donationController = {
     } catch (err) {
       res.status(500).json(err);
     }
+  },
+  
+  listarTodas: async (req, res) => {
+    try {
+      const [rows] = await db.query(`
+      SELECT * FROM vw_doacoes
+      ORDER BY data_doacao DESC
+    `);
+
+      res.json(rows);
+
+    } catch (err) {
+      res.status(500).json(err);
+    }
   }
 };

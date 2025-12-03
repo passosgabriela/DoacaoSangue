@@ -69,12 +69,9 @@
         const email = document.getElementById('email').value;
         const senha = document.getElementById('senha').value;
 
-        // tenta login via API (user)
         const res = await API.loginUser({ email, senha });
-        // salvar token + role
         API.saveSession(res.token, 'usuario', res.usuario || null);
 
-        // redireciona para a área do usuário
         window.location.href = 'usuario.html';
       } catch (err) {
         alertBox.classList.remove('d-none');

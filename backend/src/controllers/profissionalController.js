@@ -1,5 +1,5 @@
-import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import { profissionalService } from "../services/profissionalService.js";
 
 export const profissionalController = {
@@ -9,7 +9,7 @@ export const profissionalController = {
       const { nome, registro_profissional, contato, email, senha } = req.body;
 
       const existing = await profissionalService.findByEmail(email);
-      if (existing) 
+      if (existing)
         return res.status(400).json({ message: "Email já cadastrado" });
 
       const senhaHash = await bcrypt.hash(senha, 10);
@@ -25,7 +25,16 @@ export const profissionalController = {
       res.json({ message: "Profissional cadastrado" });
 
     } catch (err) {
-      res.status(500).json(err);
+      res.status(500).json({ error: err.message || err });
+    }
+  },
+
+  listar: async (req, res) => {
+    try {
+      const lista = await profissionalService.findAll();
+      res.json(lista);
+    } catch (err) {
+      res.status(500).json({ error: err.message || err });
     }
   },
 
@@ -52,25 +61,17 @@ export const profissionalController = {
       res.json({ token, profissional: prof });
 
     } catch (err) {
-      res.status(500).json(err);
+      res.status(500).json({ error: err.message || err });
     }
   },
 
-  me: async (req, res) => {
+  remover: async (req, res) => {
     try {
-      const id = req.profissionalId;
-
-      const prof = await profissionalService.findById(id);
-
-      if (!prof)
-        return res.status(404).json({ message: "Profissional não encontrado" });
-
-      delete prof.senha;
-
-      res.json(prof);
-
+      const id = req.params.id;
+      await profissionalService.remover(id);
+      res.json({ message: "Profissional removido" });
     } catch (err) {
-      res.status(500).json(err);
+      res.status(500).json({ error: err.message || err });
     }
   }
 };

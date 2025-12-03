@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="utf-8">
+  <title>Meu Perfil</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+
+<div id="site-navbar"></div>
+
+<div class="container py-5">
+  <h2 class="mb-4">Editar Perfil</h2>
+
+  <form id="perfilForm" class="bg-white p-4 shadow rounded">
+    <div id="perfilAlert" class="alert d-none"></div>
+
+    <div class="mb-3">
+      <label class="form-label">Nome</label>
+      <input type="text" id="nome" class="form-control">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Email</label>
+      <input type="email" id="email" class="form-control">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Nova Senha (opcional)</label>
+      <input type="password" id="senha" class="form-control">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Idade</label>
+      <input type="number" id="idade" class="form-control">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Peso (kg)</label>
+      <input type="number" step="0.01" id="peso" class="form-control">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Condições de Saúde</label>
+      <textarea id="condicoes" class="form-control"></textarea>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Tipo Sanguíneo</label>
+      <input type="text" id="tipo" class="form-control" placeholder="Ex: O+">
+    </div>
+
+    <button class="btn btn-primary w-100">Salvar Alterações</button>
+  </form>
+</div>
+
+<script src="../assets/js/api.js"></script>
+<script src="../assets/js/navbar.js"></script>
+
+<script>
+  initNavbar();
+
+  async function carregarPerfil() {
+    const dados = await API.getMyProfile();
+
+    document.getElementById("nome").value = dados.nome;
+    document.getElementById("email").value = dados.email;
+    document.getElementById("idade").value = dados.idade || "";
+    document.getElementById("peso").value = dados.peso || "";
+    document.getElementById("condicoes").value = dados.condicoes_saude || "";
+    document.getElementById("tipo").value = dados.tipo_sanguineo || "";
+  }
+
+  document.getElementById("perfilForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const alertBox = document.getElementById("perfilAlert");
+
+    const body = {
+      nome: document.getElementById("nome").value,
+      email: document.getElementById("email").value,
+      senha: document.getElementById("senha").value || null,
+      idade: document.getElementById("idade").value,
+      peso: document.getElementById("peso").value,
+      condicoes_saude: document.getElementById("condicoes").value,
+      tipo_sanguineo: document.getElementById("tipo").value
+    };
+
+    try {
+      await API.updateMyProfile(body);
+
+      alertBox.className = "alert alert-success";
+      alertBox.textContent = "Perfil atualizado com sucesso!";
+      alertBox.classList.remove("d-none");
+    } catch (err) {
+      alertBox.className = "alert alert-danger";
+      alertBox.textContent = err.message || "Erro ao atualizar";
+      alertBox.classList.remove("d-none");
+    }
+  });
+
+  carregarPerfil();
+</script>
+
+</body>
+</html>

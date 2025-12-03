@@ -1,28 +1,37 @@
 import { db } from "../config/db.js";
 
 export const profissionalService = {
-
-  create: async ({ nome, registro_profissional, contato, email, senhaHash }) => {
-    const [result] = await db.query(
-      "CALL criar_profissional(?, ?, ?, ?, ?)",
-      [nome, registro_profissional, contato, email, senhaHash]
+  findAll: async () => {
+    const [rows] = await db.query(
+      "SELECT id, nome, registro_profissional, email, contato FROM profissionais"
     );
-    return result;
+    return rows;
   },
 
   findByEmail: async (email) => {
-    const [rows] = await db.query(
+    const [[row]] = await db.query(
       "SELECT * FROM profissionais WHERE email = ?",
       [email]
     );
-    return rows[0];
+    return row;
   },
 
   findById: async (id) => {
-    const [rows] = await db.query(
+    const [[row]] = await db.query(
       "SELECT * FROM profissionais WHERE id = ?",
       [id]
     );
-    return rows[0];
+    return row;
+  },
+
+  create: async ({ nome, registro_profissional, contato, email, senhaHash }) => {
+    await db.query(
+      "INSERT INTO profissionais (nome, registro_profissional, contato, email, senha) VALUES (?, ?, ?, ?, ?)",
+      [nome, registro_profissional, contato, email, senhaHash]
+    );
+  },
+
+  remover: async (id) => {
+    await db.query("DELETE FROM profissionais WHERE id = ?", [id]);
   }
 };

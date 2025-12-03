@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Registrar Usuário</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+  <div id="site-navbar"></div>
+
+  <main class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card shadow">
+          <div class="card-body p-4">
+            <h3 class="mb-3">Criar Conta</h3>
+
+            <div id="registerAlert" class="alert d-none"></div>
+
+            <form id="registerForm">
+              <div class="mb-3">
+                <label class="form-label">Nome</label>
+                <input type="text" id="nome" class="form-control" required/>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" id="email" class="form-control" required/>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Senha</label>
+                <input type="password" id="senha" class="form-control" required/>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Idade</label>
+                <input type="number" id="idade" class="form-control" required/>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Peso (kg)</label>
+                <input type="number" step="0.1" id="peso" class="form-control" required/>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Condições de Saúde</label>
+                <textarea id="condicoes" class="form-control"></textarea>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Tipo Sanguíneo</label>
+                <select id="tipo_sanguineo" class="form-select" required>
+                  <option value="">Selecione</option>
+                  <option value="A+">A+</option>
+                  <option value="A-">A-</option>
+                  <option value="B+">B+</option>
+                  <option value="B-">B-</option>
+                  <option value="AB+">AB+</option>
+                  <option value="AB-">AB-</option>
+                  <option value="O+">O+</option>
+                  <option value="O-">O-</option>
+                </select>
+              </div>
+
+              <button class="btn btn-danger w-100" type="submit">Registrar</button>
+            </form>
+
+            <hr>
+            <p class="small">
+              Já tem conta? <a href="login.html">Entrar</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/navbar.js"></script>
+  <script src="../assets/js/auth.js"></script>
+
+  <script>
+    initNavbar();
+
+    const form = document.getElementById('registerForm');
+    const alertBox = document.getElementById('registerAlert');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      alertBox.classList.add('d-none');
+
+      try {
+        const body = {
+          nome: document.getElementById('nome').value,
+          email: document.getElementById('email').value,
+          senha: document.getElementById('senha').value,
+          idade: parseInt(document.getElementById('idade').value),
+          peso: parseFloat(document.getElementById('peso').value),
+          condicoes_saude: document.getElementById('condicoes').value,
+          tipo_sanguineo: document.getElementById('tipo_sanguineo').value
+        };
+
+        const res = await API.registerUser(body);
+        API.saveSession(res.token, 'usuario', res.usuario || null);
+
+        window.location.href = 'usuario.html';
+      } catch (err) {
+        alertBox.classList.remove('d-none');
+        alertBox.className = 'alert alert-danger';
+        alertBox.innerText = err.message || JSON.stringify(err);
+      }
+    });
+  </script>
+</body>
+</html>

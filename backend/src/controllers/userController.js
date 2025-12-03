@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { userService } from "../services/userService.js";
+import { db } from "../config/db.js";
 
 export const userController = {
   register: async (req, res) => {
@@ -58,19 +59,67 @@ export const userController = {
   },
 
   me: async (req, res) => {
+  try {
+    const id = req.userId;
+
+    const user = await userService.findById(id);
+
+    if (!user)
+      return res.status(404).json({ message: "Usuário não encontrado" });
+
+    delete user.senha;
+    res.json(user);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Erro ao carregar perfil", detail: err });
+  }
+},
+
+  atualizarPerfil: async (req, res) => {
     try {
       const id = req.userId;
 
-      const user = await userService.findById(id);
+      const {
+        nome,
+        email,
+        senha,
+        idade,
+        peso,
+        condicoes_saude,
+        tipo_sanguineo
+      } = req.body;
 
-      if (!user)
+      const [rows] = await db.query("SELECT * FROM usuarios WHERE id = ?", [id]);
+      if (!rows.length)
         return res.status(404).json({ message: "Usuário não encontrado" });
 
-      delete user.senha;
-      res.json(user);
+      const atual = rows[0];
+
+      let novaSenha = atual.senha;
+      if (senha) {
+        novaSenha = await bcrypt.hash(senha, 10);
+      }
+
+      await db.query(
+        "CALL atualizar_usuario(?, ?, ?, ?, ?, ?, ?, ?)",
+        [
+          id,
+          nome || atual.nome,
+          email || atual.email,
+          novaSenha,
+          idade ?? atual.idade,
+          peso ?? atual.peso,
+          condicoes_saude ?? atual.condicoes_saude,
+          tipo_sanguineo ?? atual.tipo_sanguineo
+        ]
+      );
+
+      res.json({ message: "Perfil atualizado com sucesso!" });
 
     } catch (err) {
-      res.status(500).json(err);
+      console.error(err);
+      res.status(500).json({ message: "Erro ao atualizar perfil", detail: err });
     }
   }
 };

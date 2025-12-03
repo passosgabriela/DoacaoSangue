@@ -63,7 +63,7 @@ export const adminController = {
 
   listar: async (req, res) => {
     try {
-      const [rows] = await db.query("SELECT id, nome, email, criado_em FROM admins");
+      const [rows] = await db.query("SELECT id, nome, email, data_criacao FROM admins");
       res.json(rows);
     } catch (err) {
       res.status(500).json({ error: err });

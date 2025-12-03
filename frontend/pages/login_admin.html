@@ -49,27 +49,36 @@
   <script src="../assets/js/auth.js"></script>
 
   <script>
-    initNavbar();
-    document.getElementById("formLogin").addEventListener("submit", async (e) => {
-      e.preventDefault();
+initNavbar();
 
-      const alertBox = document.getElementById("alert");
+document.getElementById("formLogin").addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-      try {
-        const res = await API.loginAdmin(email.value, senha.value);
+  const alertBox = document.getElementById("alert");
+  alertBox.classList.add("d-none");
 
-        alertBox.className = "alert alert-success";
-        alertBox.textContent = "Login realizado!";
+  const email = document.getElementById("email").value.trim();
+  const senha = document.getElementById("senha").value.trim();
 
-        setTimeout(() => window.location.href = "admin.html", 600);
+  try {
+    const res = await API.loginAdmin({ email, senha }); // ✅ enviar como objeto
 
-      } catch {
-        alertBox.className = "alert alert-danger";
-        alertBox.textContent = "Email ou senha inválidos";
-      }
-    });
-  </script>
+    // Salvar sessão
+    API.saveSession(res.token, "adm", res.admin);
 
+    alertBox.className = "alert alert-success";
+    alertBox.textContent = "Login realizado!";
+
+    setTimeout(() => window.location.href = "admin.html", 600);
+
+  } catch (err) {
+    console.error(err);
+    alertBox.className = "alert alert-danger";
+    alertBox.textContent = err.message || "Email ou senha inválidos";
+    alertBox.classList.remove("d-none");
+  }
+});
+</script>
 </body>
 
 </html>

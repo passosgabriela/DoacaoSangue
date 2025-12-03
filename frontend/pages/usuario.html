@@ -157,16 +157,23 @@
                 return;
             }
 
+            <!-- dentro da função carregarAgendamentos(), substitua esta parte -->
+
             agds.forEach(a => {
                 lista.innerHTML += `
-        <div class="col-md-6">
-          <div class="p-3 border rounded bg-white shadow-sm">
-            <h5>${a.data_agendamento} às ${a.horario}</h5>
-            <p>Status: <strong>${a.status}</strong></p>
-            <p>Campanha: ${a.campanha || "Nenhuma"}</p>
-          </div>
-        </div>`;
+                <div class="col-md-6">
+                    <div class="p-3 border rounded bg-white shadow-sm">
+                    <h5>${a.data_agendamento} às ${a.horario}</h5>
+                    <p>Status: <strong>${a.status}</strong></p>
+                    <p>Campanha: ${a.campanha || "Nenhuma"}</p>
+                    <div class="mt-2">
+                        <button class="btn btn-success btn-sm me-2" onclick="confirmarAgendamento(${a.id})" ${a.status === 'Confirmado' ? 'disabled' : ''}>Confirmar</button>
+                        <button class="btn btn-danger btn-sm" onclick="cancelarAgendamento(${a.id})" ${a.status === 'Cancelado' ? 'disabled' : ''}>Cancelar</button>
+                    </div>
+                    </div>
+                </div>`;
             });
+
         }
 
         async function carregarDoacoes() {
@@ -190,6 +197,25 @@
           </div>
         </div>`;
             });
+        }
+        async function confirmarAgendamento(id) {
+            try {
+                await API.confirmarAgendamento(id);
+                alert('Agendamento confirmado!');
+                carregarAgendamentos();
+            } catch (err) {
+                alert('Erro ao confirmar agendamento: ' + (err.message || err));
+            }
+        }
+
+        async function cancelarAgendamento(id) {
+            try {
+                await API.cancelarAgendamento(id);
+                alert('Agendamento cancelado!');
+                carregarAgendamentos();
+            } catch (err) {
+                alert('Erro ao cancelar agendamento: ' + (err.message || err));
+            }
         }
 
         carregarCampanhas();

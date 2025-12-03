@@ -19,24 +19,28 @@ function initNavbar() {
             </li>
 
             ${role === 'usuario'
-              ? `<li class="nav-item"><a class="nav-link" href="../pages/usuario.html">Minha Área</a></li>`
-              : ''}
+      ? `
+    <li class="nav-item"><a class="nav-link" href="../pages/usuario.html">Minha Área</a></li>
+    <li class="nav-item"><a class="nav-link" href="../pages/perfil.html">Meu Perfil</a></li>
+  `
+      : ''}
+
 
             ${role === 'profissional'
-              ? `<li class="nav-item"><a class="nav-link" href="../pages/profissional.html">Profissional</a></li>`
-              : ''}
+      ? `<li class="nav-item"><a class="nav-link" href="../pages/profissional.html">Profissional</a></li>`
+      : ''}
 
             ${role === 'adm'
-              ? `<li class="nav-item"><a class="nav-link" href="../pages/admin.html">Admin</a></li>`
-              : ''}
+      ? `<li class="nav-item"><a class="nav-link" href="../pages/admin.html">Admin</a></li>`
+      : ''}
 
             ${!role
-              ? `<li class="nav-item"><a class="nav-link" href="../pages/login.html">Entrar</a></li>`
-              : ''}
+      ? `<li class="nav-item"><a class="nav-link" href="../pages/login.html">Entrar</a></li>`
+      : ''}
 
             ${role
-              ? `<li class="nav-item"><a class="nav-link text-danger" id="logoutBtn" href="#">Sair</a></li>`
-              : ''}
+      ? `<li class="nav-item"><a class="nav-link text-danger" id="logoutBtn" href="#">Sair</a></li>`
+      : ''}
           </ul>
         </div>
       </div>

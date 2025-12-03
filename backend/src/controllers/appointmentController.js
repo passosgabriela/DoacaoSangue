@@ -17,7 +17,11 @@ export const appointmentController = {
       res.json({ message: "Agendamento criado com sucesso" });
 
     } catch (err) {
-      res.status(500).json({ error: err.sqlMessage || err });
+      if (err.code === "ER_SIGNAL_EXCEPTION") {
+        return res.status(400).json({ message: err.sqlMessage });
+      }
+
+      res.status(500).json({ message: "Erro interno do servidor", detail: err.sqlMessage || err });
     }
   },
 
@@ -61,5 +65,22 @@ export const appointmentController = {
     } catch (err) {
       res.status(500).json(err);
     }
+  },
+
+  agendamentosDoDia: async (req, res) => {
+    try {
+      const { data } = req.params;
+
+      const [rows] = await db.query(
+        "SELECT * FROM vw_agendamentos WHERE data_agendamento = ? ORDER BY horario ASC",
+        [data]
+      );
+
+      res.json(rows);
+
+    } catch (err) {
+      res.status(500).json({ message: "Erro ao buscar agendamentos do dia", detail: err });
+    }
   }
+
 };

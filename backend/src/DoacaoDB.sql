@@ -111,6 +111,7 @@ DELIMITER ;
 CREATE OR REPLACE VIEW vw_agendamentos AS
 SELECT 
     a.id,
+    a.usuario_id,
     u.nome AS usuario,
     a.data_agendamento,
     a.horario,
@@ -123,6 +124,7 @@ JOIN usuarios u ON u.id = a.usuario_id;
 CREATE OR REPLACE VIEW vw_doacoes AS
 SELECT 
     d.id,
+    d.usuario_id,
     u.nome AS usuario,
     d.data_doacao,
     d.volume_coletado,
@@ -161,6 +163,7 @@ BEGIN
         SELECT 1 FROM agendamentos
         WHERE usuario_id = NEW.usuario_id
           AND data_agendamento = NEW.data_agendamento
+          AND status != 'CANCELADO'
     ) THEN
         SIGNAL SQLSTATE '45000'
             SET MESSAGE_TEXT = 'Usuário já possui agendamento neste dia.';
