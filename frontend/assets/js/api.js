@@ -50,9 +50,10 @@ const API = (function () {
       request("/profissionais/login", { method: "POST", body }),
 
     registrarProfissional: (body) =>
-      request("/profissionais", { method: "POST", body }),
+      request("/profissionais/register", { method: "POST", body }),
 
     getProfissionais: () => request("/profissionais"),
+    
     removerProfissional: (id) =>
       request(`/profissionais/${id}`, { method: "DELETE" }),
 
@@ -82,15 +83,15 @@ const API = (function () {
     // AGENDAMENTOS
     // ---------------------------
     createAgendamento: (body) =>
-      request("/appointment/create", { method: "POST", body }),
+      request("/appointments/create", { method: "POST", body }),
 
     getMeusAgendamentos: () => request("/appointments/meus"),
 
     confirmarAgendamento: (id) =>
-      request(`/appointment/confirmar/${id}`, { method: "POST" }),
+      request(`/appointments/confirmar/${id}`, { method: "POST" }),
 
     cancelarAgendamento: (id) =>
-      request(`/appointment/cancelar/${id}`, { method: "POST" }),
+      request(`/appointments/cancelar/${id}`, { method: "POST" }),
 
     getAgendamentosDia: (data) =>
       request(`/appointments/dia/${data}`),

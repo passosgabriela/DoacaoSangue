@@ -92,17 +92,38 @@ RETURNS BOOLEAN
 DETERMINISTIC
 BEGIN
     DECLARE ultima DATE;
+    DECLARE peso_usuario DECIMAL(5,2);
+    DECLARE idade_usuario INT;
 
+    -- pega a data da última doação
     SELECT MAX(data_doacao)
     INTO ultima
     FROM doacoes
     WHERE usuario_id = p_usuario_id;
 
+    -- pega peso e idade do usuário
+    SELECT peso, idade
+    INTO peso_usuario, idade_usuario
+    FROM usuarios
+    WHERE id = p_usuario_id;
+
+    -- verifica peso mínimo
+    IF peso_usuario < 50 THEN
+        RETURN FALSE;
+    END IF;
+
+    -- verifica idade mínima e máxima
+    IF idade_usuario < 18 OR idade_usuario > 65 THEN
+        RETURN FALSE;
+    END IF;
+
+    -- se nunca doou e atende aos critérios
     IF ultima IS NULL THEN 
         RETURN TRUE;
     END IF;
 
-    RETURN DATEDIFF(CURDATE(), ultima) >= 60;
+    -- verifica intervalo entre doações (120 dias)
+    RETURN DATEDIFF(CURDATE(), ultima) >= 120;
 END //
 DELIMITER ;
 
@@ -244,13 +265,6 @@ BEGIN
 END //
 DELIMITER ;
 
-DELIMITER //
-CREATE PROCEDURE listar_usuarios()
-BEGIN
-  SELECT * FROM usuarios ORDER BY data_cadastro DESC;
-END //
-DELIMITER ;
-
 -- CRUD PROFISSIONAIS
 DELIMITER //
 CREATE PROCEDURE criar_profissional(
@@ -267,36 +281,9 @@ END //
 DELIMITER ;
 
 DELIMITER //
-CREATE PROCEDURE atualizar_profissional(
-  IN p_id INT,
-  IN p_nome VARCHAR(100),
-  IN p_registro VARCHAR(50),
-  IN p_contato VARCHAR(50),
-  IN p_email VARCHAR(100),
-  IN p_senha VARCHAR(255)
-)
-BEGIN
-  UPDATE profissionais
-  SET nome = p_nome,
-      registro_profissional = p_registro,
-      contato = p_contato,
-      email = p_email,
-      senha = p_senha
-  WHERE id = p_id;
-END //
-DELIMITER ;
-
-DELIMITER //
 CREATE PROCEDURE remover_profissional(IN p_id INT)
 BEGIN
   DELETE FROM profissionais WHERE id = p_id;
-END //
-DELIMITER ;
-
-DELIMITER //
-CREATE PROCEDURE listar_profissionais()
-BEGIN
-  SELECT * FROM profissionais ORDER BY nome;
 END //
 DELIMITER ;
 
@@ -311,24 +298,6 @@ CREATE PROCEDURE criar_campanha(
 BEGIN
   INSERT INTO campanhas (titulo, descricao, data_inicio, data_fim)
   VALUES (p_titulo, p_descricao, p_inicio, p_fim);
-END //
-DELIMITER ;
-
-DELIMITER //
-CREATE PROCEDURE atualizar_campanha(
-  IN p_id INT,
-  IN p_titulo VARCHAR(100),
-  IN p_descricao TEXT,
-  IN p_inicio DATE,
-  IN p_fim DATE
-)
-BEGIN
-  UPDATE campanhas
-  SET titulo = p_titulo,
-      descricao = p_descricao,
-      data_inicio = p_inicio,
-      data_fim = p_fim
-  WHERE id = p_id;
 END //
 DELIMITER ;
 
@@ -356,19 +325,6 @@ CREATE PROCEDURE criar_admin(
 BEGIN
   INSERT INTO admins (nome, email, senha)
   VALUES (p_nome, p_email, p_senha);
-END //
-DELIMITER ;
-
-DELIMITER //
-CREATE PROCEDURE atualizar_admin(
-  IN p_id INT,
-  IN p_nome VARCHAR(100),
-  IN p_email VARCHAR(120)
-)
-BEGIN
-  UPDATE admins
-  SET nome = p_nome, email = p_email
-  WHERE id = p_id;
 END //
 DELIMITER ;
 

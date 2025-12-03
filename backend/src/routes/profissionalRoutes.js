@@ -7,5 +7,6 @@ const router = express.Router();
 router.get("/", profissionalController.listar);
 router.post("/register", auth, onlyAdmin, profissionalController.cadastrar);
 router.post("/login", profissionalController.login);
+router.delete("/:id", auth, onlyAdmin, profissionalController.remover);
 
 export default router;
